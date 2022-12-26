@@ -57,13 +57,14 @@ export default function NoteDetailsPage() {
       <Form method="post" key={data.note.id}>
         <p>
           <input
-            className="mb-2 w-full border text-2xl font-bold"
+            className="mb-2 w-full text-2xl font-bold"
             name="title"
             defaultValue={data.note.title ?? ""}
             type="text"
+            placeholder="enter a title"
           />
         </p>
-        <textarea className="w-full border" name="body">
+        <textarea className="w-full" name="body">
           {data.note.body}
         </textarea>
         <hr className="my-4" />

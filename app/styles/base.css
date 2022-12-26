@@ -1,0 +1,28 @@
+:root {
+    --base-bg: white;
+    --base-color: black;
+    --base-border-color: #ccc;
+}
+
+body, input, textarea, select {
+    background-color: var(--base-bg);
+    color: var(--base-color);
+}
+
+.dark-mode {
+    --base-bg: black;
+    --base-color: #ccc;
+    --base-border-color: #444;
+}
+
+input,
+select,
+textarea {
+ border-width: 1px;
+ border-color: var(--base-border-color);
+ border-radius: 3px;
+ padding-left: 8px;
+ padding-right: 8px;
+ padding-top: 4px;
+ padding-bottom: 8px;
+}
