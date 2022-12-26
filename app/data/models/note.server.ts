@@ -16,10 +16,29 @@ export function getNote({
   });
 }
 
+export async function appendToNote({
+  id,
+  content,
+}: Pick<Note, "id"> & {
+  content: string;
+}) {
+  const note = await prisma.note.findFirstOrThrow({
+    select: { id: true, body: true },
+    where: { id },
+  });
+
+  note.body = note.body + "\n" + content;
+  return prisma.note.update({
+    select: { id: true, body: true },
+    data: note,
+    where: { id },
+  });
+}
+
 export function getNoteListItems({ userId }: { userId: User["id"] }) {
   return prisma.note.findMany({
     where: { userId },
-    select: { id: true, title: true },
+    select: { id: true, title: true, createdAt: true },
     orderBy: { updatedAt: "desc" },
   });
 }
@@ -28,8 +47,9 @@ export function createNote({
   body,
   title,
   userId,
-}: Pick<Note, "body" | "title"> & {
+}: Pick<Note, "body"> & {
   userId: User["id"];
+  title?: string;
 }) {
   return prisma.note.create({
     data: {

@@ -29,6 +29,7 @@
     "/public/build"
   ],
   "dependencies": {
+    "@banana-dev/banana-dev": "^4.0.0",
     "@prisma/client": "^4.5.0",
     "@remix-run/node": "*",
     "@remix-run/react": "*",
@@ -36,8 +37,10 @@
     "@remix-run/server-runtime": "*",
     "bcryptjs": "^2.4.3",
     "isbot": "^3.6.3",
+    "mic-recorder-to-mp3": "^2.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "shortid": "^2.2.16",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
@@ -54,6 +57,7 @@
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
+    "@types/shortid": "0.0.29",
     "@vitejs/plugin-react": "^2.2.0",
     "@vitest/coverage-c8": "^0.24.5",
     "autoprefixer": "^10.4.13",
@@ -66,6 +70,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-cypress": "^2.12.1",
     "happy-dom": "^6.0.4",
+    "jest-mock-extended": "^2.0.4",
     "msw": "^0.47.4",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.18",
@@ -79,7 +84,8 @@
     "typescript": "^4.8.4",
     "vite": "^3.2.2",
     "vite-tsconfig-paths": "^3.5.2",
-    "vitest": "^0.24.5"
+    "vitest": "^0.24.5",
+    "vitest-mock-extended": "^1.0.8"
   },
   "engines": {
     "node": ">=14"
