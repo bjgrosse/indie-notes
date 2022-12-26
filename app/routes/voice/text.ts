@@ -4,7 +4,6 @@ import type { TextCommandResult } from "~/data/services/commands/types";
 import { requireUserId } from "~/session.server";
 
 export async function action(args: ActionArgs): Promise<TextCommandResult> {
-  console.log("haha");
   const userId = await requireUserId(args.request);
   const data = await args.request.formData();
   const prompt = data.get("text") as string;

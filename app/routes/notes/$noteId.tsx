@@ -1,9 +1,9 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useCatch, useLoaderData } from "@remix-run/react";
+import { Form, useCatch, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { deleteNote, getNote } from "~/data/models/note.server";
+import { deleteNote, getNote, updateNote } from "~/data/models/note.server";
 import { requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -21,9 +21,32 @@ export async function action({ request, params }: ActionArgs) {
   const userId = await requireUserId(request);
   invariant(params.noteId, "noteId not found");
 
-  await deleteNote({ userId, id: params.noteId });
+  const formData = await request.formData();
+  const action = formData.get("action");
+  const title = formData.get("title");
+  const body = formData.get("body");
 
-  return redirect("/notes");
+  if (action === "delete") {
+    await deleteNote({ userId, id: params.noteId });
+
+    return redirect("/notes");
+  } else {
+    if (typeof title !== "string" || title.length === 0) {
+      return json(
+        { errors: { title: "Title is required", body: null } },
+        { status: 400 }
+      );
+    }
+
+    if (typeof body !== "string" || body.length === 0) {
+      return json(
+        { errors: { title: null, body: "Body is required" } },
+        { status: 400 }
+      );
+    }
+
+    return await updateNote({ userId, id: params.noteId, title, body });
+  }
 }
 
 export default function NoteDetailsPage() {
@@ -31,17 +54,34 @@ export default function NoteDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.note.title}</h3>
-      <p className="py-6">
-        <pre>{data.note.body}</pre>
-      </p>
-      <hr className="my-4" />
-      <Form method="post">
+      <Form method="post" key={data.note.id}>
+        <p>
+          <input
+            className="mb-2 w-full border text-2xl font-bold"
+            name="title"
+            defaultValue={data.note.title ?? ""}
+            type="text"
+          />
+        </p>
+        <textarea className="w-full border" name="body">
+          {data.note.body}
+        </textarea>
+        <hr className="my-4" />
         <button
           type="submit"
+          name="action"
+          value="delete"
           className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
           Delete
+        </button>
+        <button
+          type="submit"
+          name="action"
+          value="save"
+          className="ml-4 rounded  bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+        >
+          Save
         </button>
       </Form>
     </div>
