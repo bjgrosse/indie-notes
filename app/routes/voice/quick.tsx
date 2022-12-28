@@ -1,5 +1,3 @@
-import { Form } from "@remix-run/react";
-
 import * as React from "react";
 import { useState } from "react";
 import RecordButton from "~/components/voice/RecordButton";
@@ -11,9 +9,10 @@ type Command = {
   rawText?: string;
 };
 
-export default function NewNotePage() {
+export default function QuickVoiceCommandPage() {
   const [Commands, setCommands] = useState<Command[]>([]);
   const input = React.useRef<HTMLInputElement>(null);
+  const devMode = false;
   const recordingFinished = (audio: Blob) => {
     setCommands((state) => [{ id: shortid.generate(), audio }, ...state]);
   };
@@ -25,12 +24,16 @@ export default function NewNotePage() {
   };
   return (
     <div className="flex h-full w-full flex-col items-center p-12">
-      <input ref={input} type="text" />
-      <button onClick={addText}>Go</button>
+      {devMode && (
+        <>
+          <input ref={input} type="text" />
+          <button onClick={addText}>Go</button>
+        </>
+      )}
       <RecordButton
         onFinished={recordingFinished}
         className="mb-12 self-center"
-        autoStart
+        autoStart={!devMode}
       />
       <div className="flex max-h-full min-h-0 w-96 max-w-full flex-shrink flex-col items-stretch  overflow-y-auto">
         {Commands.map((command, i) => (
