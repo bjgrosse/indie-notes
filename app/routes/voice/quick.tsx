@@ -25,8 +25,8 @@ export default function NewNotePage() {
   };
   return (
     <div className="flex h-full w-full flex-col items-center p-12">
-      {/* <input ref={input} type="text" />
-      <button onClick={addText}>Go</button> */}
+      <input ref={input} type="text" />
+      <button onClick={addText}>Go</button>
       <RecordButton
         onFinished={recordingFinished}
         className="mb-12 self-center"

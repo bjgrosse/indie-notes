@@ -60,7 +60,7 @@ export default async function processAddTo(
 
     return {
       success: false,
-      message: "Could not find matching note to add to.",
+      message: "Could not find matching note.",
     };
   }
 

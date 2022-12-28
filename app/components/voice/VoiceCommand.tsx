@@ -38,10 +38,13 @@ export default function VoiceCommand({ audio, rawText }: VoiceCommandProps) {
 
   useEffect(() => {
     if (fetcher.data?.success === false) {
+      window.speechSynthesis.speak(
+        new SpeechSynthesisUtterance(fetcher.data?.message)
+      );
       const audio = new Audio("/sounds/error.wav");
       audio.play();
     }
-  }, [fetcher.data?.success]);
+  }, [fetcher.data?.message, fetcher.data?.success]);
 
   const message = fetcher.data?.recordId ? (
     <a href={`/notes/${fetcher.data?.recordId}`}>{fetcher.data?.message}</a>
