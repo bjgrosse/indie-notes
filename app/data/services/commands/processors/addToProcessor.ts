@@ -11,8 +11,6 @@ export default async function processAddTo(
     .toLowerCase()
     .replace(/[^a-z0-9 ]/g, "")
     .trim();
-  console.log(normalized);
-  console.log(await prisma.note.findMany());
 
   if (normalized.startsWith("add to")) {
     const remainder = normalized.slice(6).trim();
@@ -24,6 +22,12 @@ export default async function processAddTo(
         orderBy: { createdAt: "desc" },
       });
       noteDesignator = "last note";
+    } else if (remainder.startsWith("last ")) {
+      targetNote = await prisma.note.findFirst({
+        select: { id: true, title: true },
+        orderBy: { createdAt: "desc" },
+      });
+      noteDesignator = "last ";
     } else {
       const [firstWord] = remainder.split(" ");
       const notes = await prisma.note.findMany({
@@ -32,7 +36,6 @@ export default async function processAddTo(
         orderBy: { updatedAt: "desc" },
       });
 
-      console.log(notes);
       targetNote = notes.find(
         (note) => note.title && remainder.startsWith(note.title.toLowerCase())
       );
@@ -42,14 +45,15 @@ export default async function processAddTo(
 
     if (targetNote) {
       const content = text.replace(
-        new RegExp(`^.*?${noteDesignator}[^a-zA-Z0-9]*`, "g"),
+        new RegExp(`^.*?${noteDesignator}[^a-zA-Z0-9]*`, "gi"),
         ""
       );
       appendToNote({ id: targetNote.id, content });
 
       return {
         success: true,
-        message: `Added to ${targetNote.title}}`,
+        message: `Added to ${targetNote.title || "last note"}`,
+        content,
         recordId: targetNote.id,
       };
     }

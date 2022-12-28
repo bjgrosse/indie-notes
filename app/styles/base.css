@@ -2,11 +2,27 @@
     --base-bg: white;
     --base-color: black;
     --base-border-color: #ccc;
+    --base-link-color: rgb(0, 66, 210);
+    --container-neutral-bg: #f5f5f5;
 }
 
 body, input, textarea, select {
     background-color: var(--base-bg);
     color: var(--base-color);
+}
+
+a {
+    color: var(--base-link-color);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+code {
+    background-color: var(--container-neutral-bg);
+    border-radius: 3px;
+    padding: 2px 4px;
 }
 
 .dark-mode {

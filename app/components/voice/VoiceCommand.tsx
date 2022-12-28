@@ -13,7 +13,6 @@ export default function VoiceCommand({ audio, rawText }: VoiceCommandProps) {
   useEffect(() => {
     if (started.current || fetcher.type !== "init") return;
     if (audio) {
-      console.log("audio");
       started.current = true;
       var reader = new FileReader();
       reader.readAsDataURL(audio);
@@ -21,7 +20,6 @@ export default function VoiceCommand({ audio, rawText }: VoiceCommandProps) {
         const result = reader.result as string;
         var base64data = result.split(",")[1];
 
-        console.log(fetcher.type);
         fetcher.submit(
           { audio: base64data },
           { method: "post", action: "/voice/command" }
@@ -29,25 +27,36 @@ export default function VoiceCommand({ audio, rawText }: VoiceCommandProps) {
       };
     } else if (rawText) {
       started.current = true;
-      console.log(rawText);
       setTimeout(() => {
         fetcher.submit(
           { text: rawText },
           { method: "post", action: "/voice/text" }
         );
       }, 0);
-
-      console.log("test/");
     }
   }, [audio, fetcher, rawText]);
 
-  return fetcher.state !== "idle" ? (
-    <>Processing...</>
+  const message = fetcher.data?.recordId ? (
+    <a href={`/notes/${fetcher.data?.recordId}`}>{fetcher.data?.message}</a>
   ) : (
-    <>
-      {fetcher.data?.success ? "✅" : "❌"} {fetcher.data?.prompt}
-      <br />
-      {!fetcher.data?.success && fetcher.data?.message}
-    </>
+    <span>{fetcher.data?.message}</span>
+  );
+  return fetcher.state !== "idle" ? (
+    <div className="mb-2 flex max-w-full flex-shrink-0 truncate rounded border p-2">
+      Processing...
+    </div>
+  ) : (
+    <div
+      className="mb-2 flex max-w-full flex-shrink-0 truncate rounded border  p-2"
+      title={fetcher.data?.message}
+    >
+      {fetcher.data?.success ? "✅" : "❌"}
+      <div className="ml-2 flex min-w-0 max-w-full flex-shrink flex-grow flex-col">
+        {message}
+        <code className="max-h-24 w-full max-w-full overflow-y-auto whitespace-normal">
+          {fetcher.data?.content || fetcher.data?.prompt}
+        </code>
+      </div>
+    </div>
   );
 }

@@ -34,6 +34,5 @@ export async function action({
     modelParameters
   )) as WhisperTranscribeResult;
 
-  console.log(result);
   return { id, result: result.modelOutputs[0].text };
 }

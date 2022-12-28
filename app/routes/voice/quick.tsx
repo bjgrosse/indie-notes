@@ -18,22 +18,24 @@ export default function NewNotePage() {
     setCommands((state) => [{ id: shortid.generate(), audio }, ...state]);
   };
   const addText = () => {
-    console.log(input.current?.value);
     setCommands((state) => [
       { id: shortid.generate(), rawText: input.current?.value },
       ...state,
     ]);
   };
   return (
-    <div>
-      <input ref={input} type="text" />
-      <button onClick={addText}>Go</button>
-      <RecordButton onFinished={recordingFinished} />
-      {Commands.map((command, i) => (
-        <p key={command.id}>
-          <VoiceCommand {...command} />
-        </p>
-      ))}
+    <div className="flex h-full w-full flex-col items-center p-12">
+      {/* <input ref={input} type="text" />
+      <button onClick={addText}>Go</button> */}
+      <RecordButton
+        onFinished={recordingFinished}
+        className="mb-12 self-center"
+      />
+      <div className="flex max-h-full min-h-0 w-96 max-w-full flex-shrink flex-col items-stretch  overflow-y-auto">
+        {Commands.map((command, i) => (
+          <VoiceCommand key={command.id} {...command} />
+        ))}
+      </div>
     </div>
   );
 }

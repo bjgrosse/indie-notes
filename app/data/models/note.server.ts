@@ -27,10 +27,26 @@ export async function appendToNote({
     where: { id },
   });
 
-  note.body = note.body + "\n" + content;
+  const lines = note.body.split("\n").filter(Boolean);
+
+  let bullet = lines[lines.length - 1]
+    .match(/^(\[[ x-]\])|([^a-zA-Z0-9]+)\s/)
+    ?.slice(1)
+    ?.find(Boolean);
+
+  if (bullet) {
+    if (bullet === "[x]") {
+      bullet = "[ ]";
+    }
+    content =
+      bullet + " " + content.replace(/,\s*(and)?\s*/gm, "\n" + bullet + " ");
+    content = content.replace(/[^a-zA-Z0-9]*$/gm, "");
+  }
+
+  const body = `${note.body}\n${content}`;
   return prisma.note.update({
     select: { id: true, body: true },
-    data: note,
+    data: { body },
     where: { id },
   });
 }

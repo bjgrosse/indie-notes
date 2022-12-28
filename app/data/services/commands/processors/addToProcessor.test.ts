@@ -40,6 +40,22 @@ describe("addToProcessor", () => {
       content: "apples, bananas, pears",
     });
   });
+
+  it("should detect and find a note without case sensitivity", async () => {
+    prisma.note.findMany.mockResolvedValue(notes);
+    prisma.note.findFirstOrThrow.mockResolvedValue(notes[1]);
+    const result = await processAddTo(
+      " add to sample Note, apples, bananas, pears",
+      "0"
+    );
+    expect(result).not.toBeNull();
+    expect(result?.success).toBe(true);
+    expect(result?.recordId).toBe("2");
+    expect(appendToNote).toHaveBeenCalledWith({
+      id: "2",
+      content: "apples, bananas, pears",
+    });
+  });
   it("should add to most recently modified note", async () => {
     prisma.note.findMany.mockResolvedValue(notes);
     prisma.note.findFirstOrThrow.mockResolvedValue(notes[1]);

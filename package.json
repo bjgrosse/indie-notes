@@ -30,6 +30,7 @@
   ],
   "dependencies": {
     "@banana-dev/banana-dev": "^4.0.0",
+    "@heroicons/react": "^2.0.13",
     "@prisma/client": "^4.5.0",
     "@remix-run/node": "*",
     "@remix-run/react": "*",

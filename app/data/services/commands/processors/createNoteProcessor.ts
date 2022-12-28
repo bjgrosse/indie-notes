@@ -5,6 +5,11 @@ export default async function processCreateNote(
   text: string,
   userId: string
 ): Promise<CommandResult> {
-  await createNote({ body: text, userId });
-  return { success: true, message: "success" };
+  const note = await createNote({ body: text, userId });
+  return {
+    success: true,
+    message: "Created new note",
+    content: text,
+    recordId: note.id,
+  };
 }
