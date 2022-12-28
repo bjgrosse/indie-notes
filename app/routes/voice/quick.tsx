@@ -30,6 +30,7 @@ export default function NewNotePage() {
       <RecordButton
         onFinished={recordingFinished}
         className="mb-12 self-center"
+        autoStart
       />
       <div className="flex max-h-full min-h-0 w-96 max-w-full flex-shrink flex-col items-stretch  overflow-y-auto">
         {Commands.map((command, i) => (

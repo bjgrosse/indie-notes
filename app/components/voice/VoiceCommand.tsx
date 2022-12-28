@@ -36,11 +36,19 @@ export default function VoiceCommand({ audio, rawText }: VoiceCommandProps) {
     }
   }, [audio, fetcher, rawText]);
 
+  useEffect(() => {
+    if (fetcher.data?.success === false) {
+      const audio = new Audio("/sounds/error.wav");
+      audio.play();
+    }
+  }, [fetcher.data?.success]);
+
   const message = fetcher.data?.recordId ? (
     <a href={`/notes/${fetcher.data?.recordId}`}>{fetcher.data?.message}</a>
   ) : (
     <span>{fetcher.data?.message}</span>
   );
+  const content = fetcher.data?.content || fetcher.data?.prompt;
   return fetcher.state !== "idle" ? (
     <div className="mb-2 flex max-w-full flex-shrink-0 truncate rounded border p-2">
       Processing...
@@ -53,9 +61,11 @@ export default function VoiceCommand({ audio, rawText }: VoiceCommandProps) {
       {fetcher.data?.success ? "✅" : "❌"}
       <div className="ml-2 flex min-w-0 max-w-full flex-shrink flex-grow flex-col">
         {message}
-        <code className="max-h-24 w-full max-w-full overflow-y-auto whitespace-normal">
-          {fetcher.data?.content || fetcher.data?.prompt}
-        </code>
+        {content && (
+          <code className="max-h-24 w-full max-w-full overflow-y-auto whitespace-normal">
+            {content}
+          </code>
+        )}
       </div>
     </div>
   );

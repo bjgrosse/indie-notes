@@ -8,6 +8,9 @@ export async function action(args: ActionArgs): Promise<TextCommandResult> {
   const userId = await requireUserId(args.request);
   const transcription = await transcribe(args);
 
+  if (!transcription.result) {
+    return { success: false, message: "No audio detected.", prompt: "" };
+  }
   const result = await processRawText(transcription.result, userId);
 
   return { ...result, prompt: transcription.result };
