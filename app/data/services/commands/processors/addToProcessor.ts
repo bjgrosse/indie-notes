@@ -12,6 +12,7 @@ export default async function processAddTo(
     .replace(/[^a-z0-9 ]/g, "")
     .trim();
 
+  const TRIMMED_CHARS = /[^a-zA-Z0-9]/g;
   if (normalized.startsWith("add to")) {
     const remainder = normalized.slice(6).trim();
     let targetNote: Pick<Note, "id" | "title"> | null | undefined;
@@ -40,7 +41,6 @@ export default async function processAddTo(
         orderBy: { updatedAt: "desc" },
       });
 
-      const TRIMMED_CHARS = /[^a-zA-Z0-9]/g;
       targetNote = notes.find(
         (note) =>
           note.title &&
@@ -54,7 +54,10 @@ export default async function processAddTo(
 
     if (targetNote) {
       const content = text.replace(
-        new RegExp(`^.*?${noteDesignator}[^a-zA-Z0-9]*`, "gi"),
+        new RegExp(
+          `^.*?${noteDesignator?.replace(TRIMMED_CHARS, ".*?")}[^a-zA-Z0-9]*`,
+          "gi"
+        ),
         ""
       );
       appendToNote({ id: targetNote.id, content });

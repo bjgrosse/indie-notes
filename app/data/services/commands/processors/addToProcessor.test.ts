@@ -22,6 +22,14 @@ const notes = [
     updatedAt: new Date(),
     userId: "1",
   },
+  {
+    id: "3",
+    title: "Bio List",
+    body: "- temp",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    userId: "1",
+  },
 ];
 
 describe("addToProcessor", () => {
@@ -58,16 +66,16 @@ describe("addToProcessor", () => {
   });
   it("should detect and find a note ignoring spaces", async () => {
     prisma.note.findMany.mockResolvedValue(notes);
-    prisma.note.findFirstOrThrow.mockResolvedValue(notes[1]);
+    prisma.note.findFirstOrThrow.mockResolvedValue(notes[2]);
     const result = await processAddTo(
-      " add to sampleNote, apples, bananas, pears",
+      " add to BioList, apples, bananas, pears",
       "0"
     );
     expect(result).not.toBeNull();
     expect(result?.success).toBe(true);
-    expect(result?.recordId).toBe("2");
+    expect(result?.recordId).toBe("3");
     expect(appendToNote).toHaveBeenCalledWith({
-      id: "2",
+      id: "3",
       content: "apples, bananas, pears",
     });
   });
