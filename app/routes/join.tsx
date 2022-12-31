@@ -42,7 +42,7 @@ export async function action({ request }: ActionArgs) {
   }
 
   const existingUser = await getUserByEmail(email);
-  if (existingUser) {
+  if (existingUser && existingUser.initialized) {
     return json(
       {
         errors: {

@@ -13,9 +13,11 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  initialized Boolean @default(false)
 
-  password Password?
-  notes    Note[]
+  password        Password?
+  CreatedNotes            Note[]
+  NotePermissions NotePermissions[]
 }
 
 model Password {
@@ -26,13 +28,29 @@ model Password {
 }
 
 model Note {
-  id    String @id @default(cuid())
+  id    String  @id @default(cuid())
   title String?
   body  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdBy       User              @relation(fields: [createdById], references: [id])
+  createdById          String
+  NotePermissions NotePermissions[]
+}
+
+model NotePermissions {
+  note   Note   @relation(fields: [noteId], references: [id])
+  noteId String
+
+  user   User   @relation(fields: [userId], references: [id])
   userId String
+
+  role String @default("owner")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, noteId])
 }

@@ -1,3 +1,4 @@
+import { getPermissionsFilter } from "~/data/models/utilities/permissions";
 import { prisma } from "~/db.server";
 import type { Note } from "../../../models/note.server";
 import { appendToNote } from "../../../models/note.server";
@@ -21,22 +22,21 @@ export default async function processAddTo(
       targetNote = await prisma.note.findFirst({
         select: { id: true, title: true },
         orderBy: { createdAt: "desc" },
-        where: { userId },
+        where: { ...getPermissionsFilter("editor", userId) },
       });
       noteDesignator = "last note";
     } else if (remainder.startsWith("last ")) {
       targetNote = await prisma.note.findFirst({
         select: { id: true, title: true },
         orderBy: { createdAt: "desc" },
-        where: { userId },
+        where: { ...getPermissionsFilter("editor", userId) },
       });
       noteDesignator = "last ";
     } else {
-      const [firstWord] = remainder.split(" ");
       const notes = await prisma.note.findMany({
         // where: { title: { startsWith: firstWord } },
 
-        where: { userId },
+        where: { ...getPermissionsFilter("editor", userId) },
         select: { id: true, title: true },
         orderBy: { updatedAt: "desc" },
       });
@@ -60,7 +60,7 @@ export default async function processAddTo(
         ),
         ""
       );
-      appendToNote({ id: targetNote.id, content });
+      appendToNote({ id: targetNote.id, content, userId });
 
       return {
         success: true,

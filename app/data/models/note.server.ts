@@ -1,6 +1,10 @@
 import type { User, Note } from "@prisma/client";
+import { connect } from "http2";
+import invariant from "tiny-invariant";
 
 import { prisma } from "~/db.server";
+import { Role, Roles } from "../constants";
+import { getPermissionsFilter } from "./utilities/permissions";
 
 export type { Note } from "@prisma/client";
 
@@ -12,19 +16,49 @@ export function getNote({
 }) {
   return prisma.note.findFirst({
     select: { id: true, body: true, title: true },
-    where: { id, userId },
+    where: { id, ...getPermissionsFilter("viewer", userId) },
+  });
+}
+export async function shareNote({
+  id,
+  email,
+  role,
+  userId,
+}: Pick<Note, "id"> & {
+  userId: User["id"];
+  email: User["email"];
+  role: Role;
+}) {
+  // check permissions
+  await prisma.note.findFirstOrThrow({
+    where: { id, ...getPermissionsFilter("owner", userId) },
+  });
+
+  return prisma.note.update({
+    select: { id: true },
+    data: {
+      NotePermissions: {
+        create: {
+          user: { connectOrCreate: { where: { email }, create: { email } } },
+          role,
+        },
+      },
+    },
+    where: { id },
   });
 }
 
 export async function appendToNote({
   id,
   content,
+  userId,
 }: Pick<Note, "id"> & {
+  userId: User["id"];
   content: string;
 }) {
+  // check permissions
   const note = await prisma.note.findFirstOrThrow({
-    select: { id: true, body: true },
-    where: { id },
+    where: { id, ...getPermissionsFilter("editor", userId) },
   });
 
   const lines = note.body.split("\n").filter(Boolean);
@@ -61,21 +95,19 @@ export async function updateNote({
 }) {
   const note = await prisma.note.findFirstOrThrow({
     select: { id: true, body: true, title: true },
-    where: { id, userId },
+    where: { id, ...getPermissionsFilter("editor", userId) },
   });
 
-  note.title = title;
-  note.body = body;
   return prisma.note.update({
-    select: { id: true, body: true },
-    data: note,
+    select: { id: true },
+    data: { title, body },
     where: { id },
   });
 }
 
 export function getNoteListItems({ userId }: { userId: User["id"] }) {
   return prisma.note.findMany({
-    where: { userId },
+    where: { ...getPermissionsFilter("viewer", userId) },
     select: { id: true, title: true, createdAt: true },
     orderBy: { updatedAt: "desc" },
   });
@@ -93,10 +125,13 @@ export function createNote({
     data: {
       title,
       body,
-      user: {
+      createdBy: {
         connect: {
           id: userId,
         },
+      },
+      NotePermissions: {
+        create: { user: { connect: { id: userId } }, role: Roles.Owner },
       },
     },
   });
@@ -107,6 +142,6 @@ export function deleteNote({
   userId,
 }: Pick<Note, "id"> & { userId: User["id"] }) {
   return prisma.note.deleteMany({
-    where: { id, userId },
+    where: { id, ...getPermissionsFilter("owner", userId) },
   });
 }

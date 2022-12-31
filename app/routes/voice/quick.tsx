@@ -12,7 +12,7 @@ type Command = {
 export default function QuickVoiceCommandPage() {
   const [Commands, setCommands] = useState<Command[]>([]);
   const input = React.useRef<HTMLInputElement>(null);
-  const devMode = false;
+  const devMode = true;
   const recordingFinished = (audio: Blob) => {
     setCommands((state) => [{ id: shortid.generate(), audio }, ...state]);
   };

@@ -12,7 +12,7 @@ const notes = [
     body: "temp",
     createdAt: new Date(),
     updatedAt: new Date(),
-    userId: "1",
+    createdById: "1",
   },
   {
     id: "2",
@@ -20,7 +20,7 @@ const notes = [
     body: "temp",
     createdAt: new Date(),
     updatedAt: new Date(),
-    userId: "1",
+    createdById: "1",
   },
   {
     id: "3",
@@ -28,7 +28,7 @@ const notes = [
     body: "- temp",
     createdAt: new Date(),
     updatedAt: new Date(),
-    userId: "1",
+    createdById: "1",
   },
 ];
 
@@ -46,6 +46,7 @@ describe("addToProcessor", () => {
     expect(appendToNote).toHaveBeenCalledWith({
       id: "2",
       content: "apples, bananas, pears",
+      userId: "0",
     });
   });
 
@@ -62,6 +63,7 @@ describe("addToProcessor", () => {
     expect(appendToNote).toHaveBeenCalledWith({
       id: "2",
       content: "apples, bananas, pears",
+      userId: "0",
     });
   });
   it("should detect and find a note ignoring spaces", async () => {
@@ -77,6 +79,7 @@ describe("addToProcessor", () => {
     expect(appendToNote).toHaveBeenCalledWith({
       id: "3",
       content: "apples, bananas, pears",
+      userId: "0",
     });
   });
   it("should add to most recently modified note", async () => {
@@ -85,7 +88,7 @@ describe("addToProcessor", () => {
     prisma.note.findFirst.mockResolvedValue(notes[1]);
     const result = await processAddTo(
       " add to last note, apples, bananas, pears",
-      "0"
+      "1"
     );
 
     expect(result).not.toBeNull();
@@ -94,6 +97,7 @@ describe("addToProcessor", () => {
     expect(appendToNote).toHaveBeenCalledWith({
       id: "2",
       content: "apples, bananas, pears",
+      userId: "1",
     });
   });
 });
